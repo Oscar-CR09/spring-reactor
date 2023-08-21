@@ -1,5 +1,8 @@
 package com.examples.springboot.reactor.app;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -20,8 +23,18 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		Flux<Usuario> nombres = Flux.just("Oscar Cervantes","Pedro Guzman","Diego Sultano","x pedro","x c")
-				.map(nombre -> new Usuario(nombre.split(" ")[0].toUpperCase(),nombre.split(" ")[1].toUpperCase()))
+		
+		List<String> usauriosList = new ArrayList<>();
+		usauriosList.add("Oscar Cervantes");
+		usauriosList.add("Pedro Guzman");
+		usauriosList.add("Diego Sultano");
+		usauriosList.add("x pedro");
+		usauriosList.add("x c");
+		
+		
+		Flux<String> nombres = Flux.fromIterable(usauriosList); /* Flux.just("Oscar Cervantes","Pedro Guzman","Diego Sultano","x pedro","x c");*/
+		
+				Flux<Usuario> usuarios = nombres.map(nombre -> new Usuario(nombre.split(" ")[0].toUpperCase(),nombre.split(" ")[1].toUpperCase()))
 				.filter(usuario ->  usuario.getNombre().toLowerCase().equals("x"))
 				.doOnNext(usuario -> {
 					if (usuario == null ) {
@@ -35,7 +48,7 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 					return usuario;
 				});
 				
-		nombres.subscribe(e -> log.info(e.toString()),
+		usuarios.subscribe(e -> log.info(e.toString()),
 				error -> log.error(error.getMessage()),
 				new Runnable() {
 					
